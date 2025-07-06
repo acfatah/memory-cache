@@ -11,21 +11,34 @@ describe('cache', () => {
   })
 
   it('should be able to add an item to the cache', () => {
-    const { set } = useMemoryCache()
+    const cache = useMemoryCache()
 
-    set('cache-key', 42)
+    cache.set('cache-key', 42)
   })
 
   it('should be able to get an item from the cache', () => {
-    const { set, get } = useMemoryCache()
-    set('cache-key', 3)
-    const value = get('cache-key')
+    const { get, set } = useMemoryCache<{
+      'cache-key-1': number
+      'cache-key-2': string
+      'cache-key-3': { foo: string }
+    }>()
 
-    expect(value).toEqual(3)
+    set('cache-key-1', 3)
+    set('cache-key-2', 'foo bar')
+    set('cache-key-3', { foo: 'bar' })
+
+    const value1 = get('cache-key-1')
+    expect(value1).toEqual(3)
+
+    const value2 = get('cache-key-2')
+    expect(value2).toEqual('foo bar')
+
+    const value3 = get('cache-key-3')
+    expect(value3).toEqual({ foo: 'bar' })
   })
 
   it('should respect the default expiration for the cache', async () => {
-    const { set, get } = useMemoryCache({ ttl: 2000 })
+    const { set, get } = useMemoryCache<{ 'cache-key': string }>({ ttl: 2000 })
     set('cache-key', 'foo bar')
 
     // prove that we recorded the value and its accessible immediately after setting
@@ -40,11 +53,11 @@ describe('cache', () => {
     // and prove that after more than seconds, the status is no longer in the cache
     await sleep(1 * 1500) // sleep till expire
     const valueAfterThreeSec = get('cache-key')
-    expect(valueAfterThreeSec).toEqual(undefined) // no longer defined, since the default seconds until expiration was 2
+    expect(valueAfterThreeSec).toBeUndefined() // no longer defined, since the default seconds until expiration was 2
   })
 
   it('should respect the item level expiration for the cache', async () => {
-    const { set, get } = useMemoryCache() // remember, default expiration is greater than 2 seconds
+    const { set, get } = useMemoryCache<{ 'cache-key': string }>() // remember, default expiration is greater than 2 seconds
     set('cache-key', 'foo bar', { ttl: 2000 })
 
     // prove that we recorded the value and its accessible immediately after setting
@@ -59,18 +72,18 @@ describe('cache', () => {
     // and prove that after a total of 2 seconds, the state is no longer in the cache
     await sleep(2 * 1500) // sleep till expire
     const valueAfterFiveSec = get('cache-key')
-    expect(valueAfterFiveSec).toEqual(undefined) // no longer defined, since the item level seconds until expiration was 2
+    expect(valueAfterFiveSec).toBeUndefined() // no longer defined, since the item level seconds until expiration was 2
   })
 
   it('should consider secondsUntilExpiration of null as never expiring', async () => {
-    const { set, get } = useMemoryCache({
+    const { set, get } = useMemoryCache<{ 'cache-key': string }>({
       ttl: 0, // expire immediately
     })
 
     // prove that setting something to the cache with default state will have it expired immediately
     set('cache-key', 'foo bar')
     const value = get('cache-key')
-    expect(value).toEqual(undefined)
+    expect(value).toBeUndefined()
 
     // prove that if we record the memory with expires-at Infinity, it persists
     set('cache-key', 'foo bar', {
@@ -83,7 +96,11 @@ describe('cache', () => {
 
   it('should accurately get keys', () => {
     // create the cache
-    const { set, keys } = useMemoryCache()
+    const { set, keys } = useMemoryCache<{
+      'cache-key-1': number
+      'cache-key-2': string
+      'cache-key-3': { foo: string }
+    }>()
 
     // check key is added when value is set
     set('cache-key-1', '42')
@@ -120,7 +137,7 @@ describe('cache', () => {
   })
 
   it('should remove an item from the cache', () => {
-    const { set, get, remove } = useMemoryCache()
+    const { set, get, remove } = useMemoryCache<{ 'cache-key': string }>()
 
     // Set a value in the cache
     set('cache-key', 'foo bar')
@@ -133,12 +150,17 @@ describe('cache', () => {
   })
 
   it('should purge all items from the cache', async () => {
-    const { set, get, purge } = useMemoryCache()
+    const { set, get, purge } = useMemoryCache<{
+      'cache-key-1': string
+      'cache-key-2': number
+      'cache-key-3': number
+      'cache-key-4': string
+    }>()
 
     // Set multiple values in the cache
     set('cache-key-1', 'value1')
-    set('cache-key-2', 'value2', { ttl: 1000 })
-    set('cache-key-3', 'value3', { ttl: null })
+    set('cache-key-2', 2, { ttl: 1000 })
+    set('cache-key-3', 3, { ttl: null })
     set('cache-key-4', 'value4', { ttl: Infinity })
 
     let value1 = get('cache-key-1')
@@ -156,7 +178,7 @@ describe('cache', () => {
     expect(value2).toBeUndefined()
 
     const value3 = get('cache-key-3')
-    expect(value3).toBe('value3')
+    expect(value3).toBe(3)
 
     const value4 = get('cache-key-4')
     expect(value4).toBe('value4')

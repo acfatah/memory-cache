@@ -19,13 +19,14 @@ Simple global in-memory cache for Bun environment.
 - No dependencies.
 - Uses [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) instead of plain object.
 - Purges expired cache in an interval.
+- Optional cache schema type inference.
 
 ## Usage
 
 ```typescript
 import { useMemoryCache } from '@acfatah/memory-cache'
 
-const { get, keys, remove, set } = useMemoryCache({
+const { set, get, remove, keys, clear } = useMemoryCache({
   // Default expiration value is 5 minutes if not provided.
   ttl: 15 * 60 * 1000
 })
@@ -58,13 +59,21 @@ set('cache-key', undefined)
 
 // list all available keys
 keys()
+
+// clear all cache
+clear()
 ```
 
 By default, the purge interval is set to 1 minute. To change it, use the `setPurgeTimeout` method. Note that this will affect all caches globally.
 
-To infer a type from a cache entry,
+To cache schema type inference,
 
 ```typescript
-// the value will have the type of `{ foo: string}` signature
-const value = get<{ foo: 'bar'}>('cache-key')
+const { get, set, keys } = useMemoryCache<{
+  'cache-key-1': number
+  'cache-key-2': string
+  'cache-key-3': { foo: string }
+}>()
 ```
+
+`get` method will infer all available keys and their types based on the cache schema.

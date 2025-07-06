@@ -1,18 +1,18 @@
 const ONE_MINUTES = 60000 as const
 const FIVE_MINUTES = 300000 as const
 
-export interface MemoryCache {
-  get: <T = unknown>(key: string) => T | undefined
+export interface MemoryCache<CacheSchema extends Record<string, any> = Record<string, unknown>> {
+  get: <K extends keyof CacheSchema>(key: K) => CacheSchema[K] | undefined
   set: (
-    key: string,
+    key: keyof CacheSchema,
     value: unknown,
     options?: {
       /** Duration in milliseconds. `null` or `Infinity` means no expiration */
       ttl?: number | null
     },
   ) => void
-  keys: () => string[]
-  remove: (key: string) => void
+  keys: () => Array<keyof CacheSchema>
+  remove: (key: keyof CacheSchema) => void
   clear: () => void
   purge: () => void
   setPurgeTimeout: (value: number) => void
@@ -28,7 +28,7 @@ export interface CacheOption {
 }
 
 // In-memory cache object
-const cacheStorage: Map<string, CacheEntry> = new Map()
+const cacheStorage: Map<string | number | symbol, CacheEntry> = new Map()
 const getTimeInMiliseconds = () => Date.now()
 let purgeIntervalId: NodeJS.Timer | null = null
 let purgeTimeout: number
@@ -60,12 +60,12 @@ function purge(): void {
   }
 }
 
-export function useMemoryCache({
+export function useMemoryCache<CacheSchema extends Record<string, any> = Record<string, unknown>>({
   ttl: defaultExpiration = FIVE_MINUTES,
-}: CacheOption = {}): MemoryCache {
+}: CacheOption = {}): MemoryCache<CacheSchema> {
   // define how to set an item into the cache
   function set(
-    key: string,
+    key: keyof CacheSchema,
     value: unknown,
     {
       ttl = defaultExpiration,
@@ -88,7 +88,7 @@ export function useMemoryCache({
   }
 
   // Define how to get an item from the cache
-  function get<T>(key: string): T | undefined {
+  function get<K extends keyof CacheSchema>(key: K): CacheSchema[K] | undefined {
     const cacheContent = cacheStorage.get(key)
 
     if (!cacheContent)
@@ -103,28 +103,28 @@ export function useMemoryCache({
       return undefined
     }
 
-    return value as T // Otherwise, its in the cache and not expired, so return the value
+    return value as CacheSchema[K] // Otherwise, its in the cache and not expired, so return the value
   }
 
   // Define how to grab all valid keys
-  const keys = (): string[] => {
+  function keys(): Array<keyof CacheSchema> {
     const currentTime = getTimeInMiliseconds()
-    const validKeys: string[] = []
+    const validKeys: Array<keyof CacheSchema> = []
 
     for (const [key, { ttl }] of cacheStorage.entries()) {
       if (ttl === null || ttl > currentTime) {
-        validKeys.push(key)
+        validKeys.push(key as keyof CacheSchema)
       }
     }
 
     return validKeys
   }
 
-  const remove = (key: string) => {
+  function remove(key: keyof CacheSchema) {
     cacheStorage.delete(key)
   }
 
-  const clear = () => {
+  function clear() {
     cacheStorage.clear()
   }
 
