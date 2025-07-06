@@ -1,8 +1,23 @@
 {
   "name": "@acfatah/memory-cache",
+  "type": "module",
+  "version": "0.0.0",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.mjs"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "bun src/index.ts",
-    "build": "bun build --target=node --outdir=dist --entry-naming=[name].mjs src/index.ts",
+    "build": "bun run script/build.ts",
     "lint": "bunx --bun eslint",
     "lint:changed": "bunx --bun eslint --pass-on-no-patterns --no-warn-ignored $(git diff --name-only --diff-filter=d HEAD)",
     "lint:staged": "bunx --bun eslint --pass-on-no-patterns --no-warn-ignored $(git diff --cached --name-only --diff-filter=d)",
@@ -16,6 +31,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.2",
     "@types/bun": "^1.2.17",
+    "bun-plugin-dts": "^0.3.0",
     "eslint": "^9.30.1",
     "eslint-plugin-format": "^1.0.1",
     "jiti": "^2.4.2",
