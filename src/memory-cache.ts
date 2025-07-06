@@ -1,5 +1,5 @@
-const ONE_MINUTES = 60000 as const
-const FIVE_MINUTES = 300000 as const
+const ONE_MINUTES = 60000
+const FIVE_MINUTES = 300000
 
 export interface MemoryCache<CacheSchema extends Record<string, any> = Record<string, unknown>> {
   get: <K extends keyof CacheSchema>(key: K) => CacheSchema[K] | undefined
