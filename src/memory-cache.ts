@@ -1,5 +1,6 @@
 export type CacheDuration = number | null
 
+const ONE_MINUTES = 60000 as const
 const FIVE_MINUTES = 300000 as const
 
 export interface MemoryCache {
@@ -13,6 +14,7 @@ export interface MemoryCache {
   remove: (key: string) => void
   clear: () => void
   purge: () => void
+  setPurgeTimeout: (value: number) => void
 }
 
 export interface CacheEntry {
@@ -27,6 +29,35 @@ export interface CacheOption {
 // In-memory cache object
 const cacheStorage: Map<string, CacheEntry> = new Map()
 const getTimeInMiliseconds = () => Date.now()
+let purgeIntervalId: NodeJS.Timer | null = null
+let purgeTimeout: number
+
+function createPurgeInterval(): NodeJS.Timer {
+  return setInterval(purge, purgeTimeout || ONE_MINUTES)
+}
+
+/**
+ * Default interval is 1 minute
+ */
+function setPurgeTimeout(value: number): void {
+  purgeTimeout = value
+
+  if (purgeIntervalId) {
+    clearInterval(purgeIntervalId)
+    purgeIntervalId = createPurgeInterval()
+  }
+}
+
+// Define how to purge expired items from the cache
+function purge(): void {
+  const currentTime = getTimeInMiliseconds()
+
+  for (const [key, { ttl }] of cacheStorage.entries()) {
+    if (ttl === null || ttl <= currentTime) {
+      cacheStorage.delete(key)
+    }
+  }
+}
 
 export function useMemoryCache({
   ttl: defaultExpiration = FIVE_MINUTES,
@@ -94,16 +125,21 @@ export function useMemoryCache({
     cacheStorage.clear()
   }
 
-  // Define how to purge expired items from the cache
-  const purge = (): void => {
-    const currentTime = getTimeInMiliseconds()
-    for (const [key, { ttl }] of cacheStorage.entries()) {
-      if (ttl === null || ttl <= currentTime) {
-        cacheStorage.delete(key)
-      }
-    }
-  }
+  // Set up the purge interval only if it hasn't been set up already
+  if (purgeIntervalId === null)
+    purgeIntervalId = createPurgeInterval()
 
   // return the api
-  return { set, get, keys, remove, clear, purge }
+  return {
+    set,
+    get,
+    keys,
+    remove,
+    clear,
+    purge,
+    setPurgeTimeout,
+
+    // @ts-expect-error for internal use
+    __cacheStorage: cacheStorage,
+  }
 }

@@ -18,7 +18,7 @@ Simple global in-memory cache for Bun environment.
 
 - No dependencies.
 - Uses [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) instead of plain object.
-- Type inference for the cache values.
+- Purges expired cache in an interval.
 
 ## Usage
 
@@ -59,3 +59,5 @@ set('cache-key', undefined)
 // list all available keys
 keys()
 ```
+
+By default, the purge interval is set to 1 minute. To change it, use the `setPurgeTimeout` method. Note that this will affect all caches globally.

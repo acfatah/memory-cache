@@ -150,4 +150,26 @@ describe('cache', () => {
     expect(get('cache-key-3')).toBe('value3')
     expect(get('cache-key-4')).toBe('value4')
   })
+
+  it('should call purge method in set intervals', async () => {
+    const {
+      set,
+      setPurgeTimeout,
+
+      // @ts-expect-error return Map object
+      __cacheStorage: cacheStorage,
+    } = useMemoryCache({
+      ttl: 500,
+    })
+
+    setPurgeTimeout(1000)
+
+    // Set an item in the cache to ensure there's something to purge
+    set('cache-key', 'test-value')
+
+    // Fast-forward time to simulate the purge interval
+    await sleep(1000)
+
+    expect(cacheStorage.size).toBe(0)
+  })
 })
