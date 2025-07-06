@@ -1,0 +1,153 @@
+import { beforeEach, describe, expect, it } from 'bun:test'
+import { useMemoryCache } from '@/index'
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+describe('cache', () => {
+  beforeEach(() => {
+    const cacheStorage = useMemoryCache()
+
+    cacheStorage.clear()
+  })
+
+  it('should be able to add an item to the cache', () => {
+    const { set } = useMemoryCache()
+
+    set('cache-key', 42)
+  })
+
+  it('should be able to get an item from the cache', () => {
+    const { set, get } = useMemoryCache()
+    set('cache-key', 3)
+    const value = get('cache-key')
+
+    expect(value).toEqual(3)
+  })
+
+  it('should respect the default expiration for the cache', async () => {
+    const { set, get } = useMemoryCache({ ttl: 2000 })
+    set('cache-key', 'foo bar')
+
+    // prove that we recorded the value and its accessible immediately after setting
+    const value = get('cache-key')
+    expect(value).toEqual('foo bar')
+
+    // prove that the value is still accessible after 1 seconds, since default ttl is 2 seconds
+    await sleep(1 * 1000)
+    const valueAfterOneSec = get('cache-key')
+    expect(valueAfterOneSec).toEqual('foo bar') // still should say foo bar
+
+    // and prove that after more than seconds, the status is no longer in the cache
+    await sleep(1 * 1500) // sleep till expire
+    const valueAfterThreeSec = get('cache-key')
+    expect(valueAfterThreeSec).toEqual(undefined) // no longer defined, since the default seconds until expiration was 2
+  })
+
+  it('should respect the item level expiration for the cache', async () => {
+    const { set, get } = useMemoryCache() // remember, default expiration is greater than 2 seconds
+    set('cache-key', 'foo bar', { ttl: 2000 })
+
+    // prove that we recorded the value and its accessible immediately after setting
+    const value = get('cache-key')
+    expect(value).toEqual('foo bar')
+
+    // prove that the value is still accessible after 1 seconds, since default ttl is 2 seconds
+    await sleep(1 * 1000)
+    const valueAfterThreeSec = get('cache-key')
+    expect(valueAfterThreeSec).toEqual('foo bar') // still should say foo bar
+
+    // and prove that after a total of 2 seconds, the state is no longer in the cache
+    await sleep(2 * 1500) // sleep till expire
+    const valueAfterFiveSec = get('cache-key')
+    expect(valueAfterFiveSec).toEqual(undefined) // no longer defined, since the item level seconds until expiration was 2
+  })
+
+  it('should consider secondsUntilExpiration of null as never expiring', async () => {
+    const { set, get } = useMemoryCache({
+      ttl: 0, // expire immediately
+    })
+
+    // prove that setting something to the cache with default state will have it expired immediately
+    set('cache-key', 'foo bar')
+    const value = get('cache-key')
+    expect(value).toEqual(undefined)
+
+    // prove that if we record the memory with expires-at Infinity, it persists
+    set('cache-key', 'foo bar', {
+      ttl: null,
+    })
+
+    const elephantMemory = get('cache-key')
+    expect(elephantMemory).toEqual('foo bar')
+  })
+
+  it('should accurately get keys', () => {
+    // create the cache
+    const { set, keys } = useMemoryCache()
+
+    // check key is added when value is set
+    set('cache-key-1', '42')
+    const keys1 = keys()
+
+    expect(keys1.length).toEqual(1)
+    expect(keys1[0]).toEqual('cache-key-1')
+
+    // check that there are no duplicates when key value is updated
+    set('cache-key-1', '42.0')
+    const keys2 = keys()
+    expect(keys2.length).toEqual(1)
+    expect(keys2[0]).toEqual('cache-key-1')
+
+    // check that multiple keys can be set
+    set('cache-key-2', 'foo bar')
+    const keys3 = keys()
+    expect(keys3.length).toEqual(2)
+    expect(keys3[1]).toEqual('cache-key-2')
+
+    // check that invalidation removes the key
+    set('cache-key-1', undefined)
+    const keys4 = keys()
+    expect(keys4.length).toEqual(1)
+    expect(keys4[0]).toEqual('cache-key-2')
+
+    // check that null ttl does not remove the key
+    set('cache-key-3', 'foo bar', {
+      ttl: null,
+    })
+    const keys5 = keys()
+    expect(keys5.length).toEqual(2)
+    expect(keys5[1]).toEqual('cache-key-3')
+  })
+
+  it('should remove an item from the cache', () => {
+    const { set, get, remove } = useMemoryCache()
+
+    // Set a value in the cache
+    set('cache-key', 'foo bar')
+    expect(get('cache-key')).toEqual('foo bar')
+
+    // Remove the value from the cache
+    remove('cache-key')
+    expect(get('cache-key')).toBeUndefined()
+  })
+
+  it('should purge all items from the cache', async () => {
+    const { set, get, purge } = useMemoryCache()
+
+    // Set multiple values in the cache
+    set('cache-key-1', 'value1')
+    set('cache-key-2', 'value2', { ttl: 1000 })
+    set('cache-key-3', 'value3', { ttl: null })
+    set('cache-key-4', 'value4', { ttl: Infinity })
+    expect(get('cache-key-1')).toEqual('value1')
+
+    await sleep(2 * 1000)
+
+    // Purge the expired items from the cache
+    purge()
+    expect(get('cache-key-1')).toBe('value1')
+    expect(get('cache-key-2')).toBeUndefined()
+    expect(get('cache-key-3')).toBe('value3')
+    expect(get('cache-key-4')).toBe('value4')
+  })
+})

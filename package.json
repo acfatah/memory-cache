@@ -1,0 +1,27 @@
+{
+  "name": "@acfatah/memory-cache",
+  "scripts": {
+    "start": "bun src/index.ts",
+    "build": "bun build --target=node --outdir=dist --entry-naming=[name].mjs src/index.ts",
+    "lint": "bunx --bun eslint",
+    "lint:changed": "bunx --bun eslint --pass-on-no-patterns --no-warn-ignored $(git diff --name-only --diff-filter=d HEAD)",
+    "lint:staged": "bunx --bun eslint --pass-on-no-patterns --no-warn-ignored $(git diff --cached --name-only --diff-filter=d)",
+    "lint:fix": "bunx --bun eslint --fix",
+    "lint:inspect": "bunx --bun eslint --inspect-config",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "precommit": "bun run typecheck && bun run lint:staged"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.16.2",
+    "@types/bun": "^1.2.17",
+    "eslint": "^9.30.1",
+    "eslint-plugin-format": "^1.0.1",
+    "jiti": "^2.4.2",
+    "simple-git-hooks": "^2.13.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "bun precommit"
+  }
+}
