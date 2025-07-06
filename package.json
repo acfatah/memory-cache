@@ -26,6 +26,7 @@
     "lint:inspect": "bunx --bun eslint --inspect-config",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov",
     "test:watch": "bun test --watch",
     "precommit": "bun run typecheck && bun run lint:staged"
   },
