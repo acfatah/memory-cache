@@ -16,6 +16,16 @@
       alt="GitHub last commit (by committer)"
       src="https://img.shields.io/github/last-commit/acfatah/memory-cache?display_timestamp=committer&style=flat-square"
     ></a>
+  <a href="https://qlty.sh/gh/acfatah/projects/memory-cache">
+    <img
+      src="https://qlty.sh/gh/acfatah/projects/memory-cache/maintainability.svg"
+      alt="Maintainability"
+    ></a>
+  <a href="https://qlty.sh/gh/acfatah/projects/memory-cache">
+    <img
+      src="https://qlty.sh/gh/acfatah/projects/memory-cache/coverage.svg"
+      alt="Code Coverage"
+      ></a>
 </p>
 
 Simple global in-memory cache for Bun environment.
