@@ -61,3 +61,10 @@ keys()
 ```
 
 By default, the purge interval is set to 1 minute. To change it, use the `setPurgeTimeout` method. Note that this will affect all caches globally.
+
+To infer a type from a cache entry,
+
+```typescript
+// the value will have the type of `{ foo: string}` signature
+const value = get<{ foo: 'bar'}>('cache-key')
+```

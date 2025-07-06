@@ -1,14 +1,15 @@
-export type CacheDuration = number | null
-
 const ONE_MINUTES = 60000 as const
 const FIVE_MINUTES = 300000 as const
 
 export interface MemoryCache {
-  get: (key: string) => unknown
+  get: <T = unknown>(key: string) => T | undefined
   set: (
     key: string,
     value: unknown,
-    options?: { ttl?: CacheDuration },
+    options?: {
+      /** Duration in milliseconds. `null` or `Infinity` means no expiration */
+      ttl?: number | null
+    },
   ) => void
   keys: () => string[]
   remove: (key: string) => void
@@ -19,11 +20,11 @@ export interface MemoryCache {
 
 export interface CacheEntry {
   value: unknown
-  ttl: CacheDuration
+  ttl: number | null
 }
 
 export interface CacheOption {
-  ttl?: CacheDuration
+  ttl?: number | null
 }
 
 // In-memory cache object
@@ -68,7 +69,7 @@ export function useMemoryCache({
     value: unknown,
     {
       ttl = defaultExpiration,
-    }: { ttl?: CacheDuration } = {},
+    }: { ttl?: number | null } = {},
   ) {
     // handle cache invalidation
     if (value === undefined) {
@@ -78,14 +79,16 @@ export function useMemoryCache({
     }
 
     // Handle setting
-    cacheStorage.set(key, {
+    const entry: CacheEntry = {
       value,
-      ttl: getTimeInMiliseconds() + (ttl ?? Infinity) as CacheDuration, // Infinity if null
-    })
+      ttl: getTimeInMiliseconds() + (ttl ?? Infinity), // Infinity if null
+    }
+
+    cacheStorage.set(key, entry)
   }
 
   // Define how to get an item from the cache
-  const get = (key: string): unknown => {
+  function get<T>(key: string): T | undefined {
     const cacheContent = cacheStorage.get(key)
 
     if (!cacheContent)
@@ -100,7 +103,7 @@ export function useMemoryCache({
       return undefined
     }
 
-    return value // Otherwise, its in the cache and not expired, so return the value
+    return value as T // Otherwise, its in the cache and not expired, so return the value
   }
 
   // Define how to grab all valid keys

@@ -124,7 +124,8 @@ describe('cache', () => {
 
     // Set a value in the cache
     set('cache-key', 'foo bar')
-    expect(get('cache-key')).toEqual('foo bar')
+    const value = get('cache-key')
+    expect(value).toEqual('foo bar')
 
     // Remove the value from the cache
     remove('cache-key')
@@ -139,16 +140,26 @@ describe('cache', () => {
     set('cache-key-2', 'value2', { ttl: 1000 })
     set('cache-key-3', 'value3', { ttl: null })
     set('cache-key-4', 'value4', { ttl: Infinity })
-    expect(get('cache-key-1')).toEqual('value1')
+
+    let value1 = get('cache-key-1')
+    expect(value1).toEqual('value1')
 
     await sleep(2 * 1000)
 
     // Purge the expired items from the cache
     purge()
-    expect(get('cache-key-1')).toBe('value1')
-    expect(get('cache-key-2')).toBeUndefined()
-    expect(get('cache-key-3')).toBe('value3')
-    expect(get('cache-key-4')).toBe('value4')
+
+    value1 = get('cache-key-1')
+    expect(value1).toBe('value1')
+
+    const value2 = get('cache-key-2')
+    expect(value2).toBeUndefined()
+
+    const value3 = get('cache-key-3')
+    expect(value3).toBe('value3')
+
+    const value4 = get('cache-key-4')
+    expect(value4).toBe('value4')
   })
 
   it('should call purge method in set intervals', async () => {
@@ -166,6 +177,7 @@ describe('cache', () => {
 
     // Set an item in the cache to ensure there's something to purge
     set('cache-key', 'test-value')
+    set('cache-key-2', 'value2', { ttl: 600 })
 
     // Fast-forward time to simulate the purge interval
     await sleep(1000)
