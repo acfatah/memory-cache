@@ -2,6 +2,7 @@
   "name": "@acfatah/memory-cache",
   "type": "module",
   "version": "0.0.0",
+  "license": "MIT",
   "exports": {
     "types": "./dist/index.d.ts",
     "import": "./dist/index.mjs"
