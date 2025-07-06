@@ -1,5 +1,8 @@
 name: Bun.sh CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -22,19 +25,23 @@ jobs:
       - id: checkout
         name: Checkout
         uses: actions/checkout@v4
+
       - id: setup-bun
         name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: .bun-version
+
       - id: install-deps
         name: Install dependencies
         run: |
           bun install
+
       - id: test
         name: Run test
         run: |
           bun test:coverage
+
       - id: coverage-report
         name: Upload coverage report
         uses: qltysh/qlty-action/coverage@v1
