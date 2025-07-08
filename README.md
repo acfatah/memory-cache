@@ -28,7 +28,7 @@
       ></a>
 </p>
 
-Simple global in-memory cache for Bun environment.
+A simple in-memory cache for bun and nodejs.
 
 ## Features
 

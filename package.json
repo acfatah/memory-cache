@@ -2,7 +2,25 @@
   "name": "@acfatah/memory-cache",
   "type": "module",
   "version": "0.0.0",
+  "description": "A simple in-memory cache for bun and nodejs.",
+  "author": {
+    "name": "Achmad F. Ibrahim",
+    "email": "acfatah@gmail.com",
+    "url": "https://github.com/acfatah"
+  },
   "license": "MIT",
+  "homepage": "https://github.com/acfatah/memory-cache",
+  "bugs": "https://github.com/acfatah/memory-cache/issues",
+  "keywords": [
+    "cache",
+    "memory",
+    "in-memory",
+    "bun cache",
+    "nodejs cache",
+    "time to live",
+    "ttl",
+    "expiration"
+  ],
   "exports": {
     "types": "./dist/index.d.ts",
     "import": "./dist/index.mjs"
