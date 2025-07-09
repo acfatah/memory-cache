@@ -10,6 +10,10 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/acfatah/memory-cache",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/acfatah/memory-cache.git"
+  },
   "bugs": "https://github.com/acfatah/memory-cache/issues",
   "keywords": [
     "cache",
