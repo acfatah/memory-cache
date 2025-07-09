@@ -17,6 +17,8 @@ jobs:
       - id: checkout
         name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - id: setup-bun
         name: Setup Bun
