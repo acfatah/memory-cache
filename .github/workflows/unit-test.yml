@@ -1,4 +1,4 @@
-name: Bun.sh CI
+name: Bun.sh Unit Test
 
 permissions:
   contents: read
@@ -44,7 +44,7 @@ jobs:
 
       - id: coverage-report
         name: Upload coverage report
-        uses: qltysh/qlty-action/coverage@v1
+        uses: qltysh/qlty-action/coverage@v2
         with:
           token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
           files: coverage/lcov.info
