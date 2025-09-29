@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.4.1",
-    "@commitlint/cli": "^19.8.1",
+    "@commitlint/cli": "^20.0.0",
     "@commitlint/config-conventional": "^19.8.1",
     "@types/bun": "^1.2.22",
     "bun-plugin-dts": "^0.3.0",
