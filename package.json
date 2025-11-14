@@ -54,7 +54,8 @@
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage --coverage-reporter=lcov",
     "precommit": "bun run typecheck && bun run lint:staged",
-    "release": "bunx --bun bumpp --excute=\"bun install\""
+    "release": "bunx --bun bumpp --execute=\"bun install\"",
+    "publish": "npm publish --access public"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
