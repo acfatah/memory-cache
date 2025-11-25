@@ -20,6 +20,22 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'android-pixel-7',
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'iphone-14',
+      use: { ...devices['iPhone 14'] },
+    },
   ],
   webServer: {
     command: `PLAYWRIGHT_PORT=${port} bun run script/serve-browser-tests.ts`,
