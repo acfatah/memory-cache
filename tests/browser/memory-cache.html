@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Memory Cache Browser Harness</title>
+  </head>
+  <body>
+    <script type="module">
+      import { useMemoryCache } from '/dist/index.mjs'
+
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+      const resetState = () => {
+        const cache = useMemoryCache()
+        cache.clear()
+      }
+
+      const setAndGet = () => {
+        const cache = useMemoryCache()
+        cache.clear()
+        cache.set('cache-key', 'value-42')
+
+        return {
+          keys: cache.keys(),
+          value: cache.get('cache-key'),
+        }
+      }
+
+      const multiTypeGet = () => {
+        const cache = useMemoryCache()
+        cache.clear()
+
+        cache.set('cache-key-1', 3)
+        cache.set('cache-key-2', 'foo bar')
+        cache.set('cache-key-3', { foo: 'bar' })
+
+        return {
+          value1: cache.get('cache-key-1'),
+          value2: cache.get('cache-key-2'),
+          value3: cache.get('cache-key-3'),
+        }
+      }
+
+      const defaultTtlCheck = async () => {
+        const cache = useMemoryCache({ ttl: 2000 })
+        cache.clear()
+        cache.set('cache-key', 'short-lived')
+
+        const immediate = cache.get('cache-key')
+        await sleep(1000)
+        const beforeExpiry = cache.get('cache-key')
+        await sleep(1500)
+        const afterExpiry = cache.get('cache-key')
+
+        return { immediate, beforeExpiry, afterExpiry }
+      }
+
+      const entryLevelTtlCheck = async () => {
+        const cache = useMemoryCache()
+        cache.clear()
+        cache.set('cache-key', 'short-lived', { ttl: 2000 })
+        cache.set('cache-key-2', 'long-lived', { ttl: null })
+
+        const immediate = cache.get('cache-key')
+        await sleep(1000)
+        const beforeExpiry = cache.get('cache-key')
+        await sleep(3000)
+        const expired = cache.get('cache-key')
+        const persistent = cache.get('cache-key-2')
+
+        return { immediate, beforeExpiry, expired, persistent }
+      }
+
+      const neverExpireFlow = () => {
+        const cache = useMemoryCache({ ttl: 0 })
+        cache.clear()
+
+        cache.set('cache-key', 'foo bar')
+        const expiredImmediately = cache.get('cache-key')
+
+        cache.set('cache-key', 'foo bar', { ttl: null })
+        const persistent = cache.get('cache-key')
+
+        return { expiredImmediately, persistent }
+      }
+
+      const keysFlow = () => {
+        const cache = useMemoryCache()
+        cache.clear()
+
+        cache.set('cache-key-1', '42')
+        const keys1 = cache.keys()
+
+        cache.set('cache-key-1', '42.0')
+        const keys2 = cache.keys()
+
+        cache.set('cache-key-2', 'foo bar')
+        const keys3 = cache.keys()
+
+        cache.set('cache-key-1', undefined)
+        const keys4 = cache.keys()
+
+        cache.set('cache-key-3', 'foo bar', { ttl: null })
+        const keys5 = cache.keys()
+
+        return { keys1, keys2, keys3, keys4, keys5 }
+      }
+
+      const removeFlow = () => {
+        const cache = useMemoryCache()
+        cache.clear()
+
+        cache.set('cache-key', 'foo bar')
+        const beforeRemove = cache.get('cache-key')
+
+        cache.remove('cache-key')
+        const afterRemove = cache.get('cache-key')
+
+        return { beforeRemove, afterRemove }
+      }
+
+      const purgeFlow = async () => {
+        const cache = useMemoryCache()
+        cache.clear()
+        cache.set('cache-key-1', 'value1')
+        cache.set('cache-key-2', 2, { ttl: 1000 })
+        cache.set('cache-key-3', 3, { ttl: null })
+        cache.set('cache-key-4', 'value4', { ttl: Infinity })
+
+        await sleep(2000)
+        cache.purge()
+
+        return {
+          value1: cache.get('cache-key-1'),
+          value2: cache.get('cache-key-2'),
+          value3: cache.get('cache-key-3'),
+          value4: cache.get('cache-key-4'),
+        }
+      }
+
+      const purgeIntervalFlow = async () => {
+        const cache = useMemoryCache({ ttl: 500 })
+        cache.clear()
+        cache.setPurgeTimeout(1000)
+        cache.set('cache-key', 'test-value')
+        cache.set('cache-key-2', 'value2', { ttl: 600 })
+
+        await sleep(1000)
+
+        // @ts-ignore runtime access for tests
+        const size = cache.__cacheStorage.size
+        return { size }
+      }
+
+      window.cacheTest = {
+        reset: resetState,
+        setAndGet,
+        multiTypeGet,
+        defaultTtlCheck,
+        entryLevelTtlCheck,
+        neverExpireFlow,
+        keysFlow,
+        removeFlow,
+        purgeFlow,
+        purgeIntervalFlow,
+      }
+    </script>
+  </body>
+</html>

@@ -93,3 +93,23 @@ const { get, set, keys } = useMemoryCache<{
 ```
 
 `get` method will infer all available keys and their types based on the cache schema.
+
+## Testing
+
+Run the Bun unit tests:
+
+```bash
+bun test
+```
+
+Run the real-browser regression suite (this command builds the library first and then executes Playwright against the generated `dist/index.mjs` bundle):
+
+```bash
+bun run test:e2e
+```
+
+The first time you run the browser suite, install the Playwright browser binaries:
+
+```bash
+bunx playwright install
+```
