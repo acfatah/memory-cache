@@ -1,7 +1,7 @@
 {
   "name": "@acfatah/memory-cache",
   "type": "module",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A simple in-memory cache for bun and nodejs.",
   "author": {
     "name": "Achmad F. Ibrahim",
