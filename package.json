@@ -41,7 +41,7 @@
   },
   "scripts": {
     "start": "bun src/index.ts",
-    "build": "bun run script/build.ts",
+    "build": "bun --version > .bun-version && bun run script/build.ts",
     "prepare": "bun run build",
     "lint": "bunx --bun eslint",
     "lint:changed": "{ git diff --name-only -z --diff-filter=d --relative HEAD; git ls-files -z --others --exclude-standard -- ':./'; } | xargs -0 -r bunx --bun eslint --pass-on-no-patterns --no-warn-ignored",
@@ -64,6 +64,7 @@
     "@commitlint/cli": "^20.2.0",
     "@commitlint/config-conventional": "^20.2.0",
     "@types/bun": "^1.3.5",
+    "@types/node": "^22.9.4",
     "bun-plugin-dts": "^0.3.0",
     "eslint": "^9.39.2",
     "eslint-plugin-format": "^1.1.0",
