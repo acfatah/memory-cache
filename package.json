@@ -63,14 +63,14 @@
     "publish": "npm publish --access public"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^6.2.0",
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
-    "@playwright/test": "^1.49.1",
-    "@types/bun": "^1.3.3",
+    "@antfu/eslint-config": "^6.7.1",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "@playwright/test": "^1.57.0",
+    "@types/bun": "^1.3.5",
     "bun-plugin-dts": "^0.3.0",
-    "eslint": "^9.39.1",
-    "eslint-plugin-format": "^1.0.2",
+    "eslint": "^9.39.2",
+    "eslint-plugin-format": "^1.1.0",
     "jiti": "^2.6.1",
     "simple-git-hooks": "^2.13.1"
   },
