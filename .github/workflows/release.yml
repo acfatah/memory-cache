@@ -33,6 +33,6 @@ jobs:
 
       - id: generate-changelog
         name: Generate Changelog
-        run: bunx --bun changelogithub
+        run: bunx --bun changelogithub --no-emoji
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
