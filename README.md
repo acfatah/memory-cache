@@ -107,14 +107,21 @@ Run the Bun unit tests:
 bun test
 ```
 
-Run the real-browser regression suite (this command builds the library first and then executes Playwright against the generated `dist/index.mjs` bundle):
-
-```bash
-bun run test:e2e
-```
+> [!NOTE]
+> Currently, Playwright does not work well with Bun's native execution. Therefore,
+> the browser tests are actually run using the Node.js runtime via `bunx`.
+> See [this link](https://github.com/Wendrowiec13/make-playwright-work-with-bun)
+> and [this issue](https://github.com/oven-sh/bun/issues/9911).
 
 The first time you run the browser suite, install the Playwright browser binaries:
 
 ```bash
 bunx playwright install
+```
+
+Run the real-browser regression suite (this command builds the library first and
+then executes Playwright against the generated `dist/index.mjs` bundle):
+
+```bash
+bun run test:e2e
 ```
