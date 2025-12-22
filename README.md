@@ -6,10 +6,15 @@
       alt="bun.sh"
       src="https://img.shields.io/badge/Bun-%23000000.svg?style=flat-square&logo=bun&logoColor=white"
     ></a>
-  <a href="https://github.com/antfu/eslint-config">
+  <a href="./LICENSE">
     <img
-      alt="Code Style"
-      src="https://antfu.me/badge-code-style.svg"
+      alt="GitHub"
+      src="https://img.shields.io/github/license/acfatah/memory-cache?style=flat-square"
+    ></a>
+  <a href="https://www.npmjs.com/package/@acfatah/memory-cache">
+    <img
+      alt="NPM Version"
+      src="https://img.shields.io/npm/v/%40acfatah%2Fmemory-cache"
     ></a>
   <a href="https://github.com/acfatah/memory-cache/commits/main">
     <img

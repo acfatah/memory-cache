@@ -38,7 +38,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `PLAYWRIGHT_PORT=${port} bun run script/serve-browser-tests.ts`,
+    command: `PLAYWRIGHT_PORT=${port} bun run scripts/serve-browser-tests.ts`,
     url: `http://127.0.0.1:${port}/memory-cache.html`,
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',

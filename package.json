@@ -1,7 +1,7 @@
 {
   "name": "@acfatah/memory-cache",
   "type": "module",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A simple in-memory cache for bun and nodejs.",
   "author": {
     "name": "Achmad F. Ibrahim",
@@ -41,8 +41,7 @@
   },
   "scripts": {
     "start": "bun src/index.ts",
-    "build": "bun run script/build.ts",
-    "prepare": "bun run build",
+    "build": "bun --version > .bun-version && bun install && bun run scripts/build.ts",
     "lint": "bunx --bun eslint",
     "lint:changed": "{ git diff --name-only -z --diff-filter=d --relative HEAD; git ls-files -z --others --exclude-standard -- ':./'; } | xargs -0 -r bunx --bun eslint --pass-on-no-patterns --no-warn-ignored",
     "lint:staged": "bunx --bun eslint --pass-on-no-patterns --no-warn-ignored $(git diff --relative --cached --name-only --diff-filter=d)",
@@ -59,8 +58,10 @@
     "test:e2e:headed": "bun run build && bunx playwright test --headed",
     "test:e2e:debug": "bun run build && bunx playwright test --debug",
     "precommit": "bun run typecheck && bun run lint:staged",
-    "release": "bunx --bun bumpp --execute=\"bun install\"",
-    "publish": "npm publish --access public"
+    "release": "bun run build && bunx --bun bumpp"
+  },
+  "peerDependencies": {
+    "playwright": "^1.57.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.1",
@@ -68,6 +69,7 @@
     "@commitlint/config-conventional": "^20.2.0",
     "@playwright/test": "^1.57.0",
     "@types/bun": "^1.3.5",
+    "@types/node": "^25.0.3",
     "bun-plugin-dts": "^0.3.0",
     "eslint": "^9.39.2",
     "eslint-plugin-format": "^1.1.0",

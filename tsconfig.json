@@ -34,6 +34,7 @@
         "./src/*"
       ]
     },
+    "types": ["bun-types", "node"]
   },
 
   "include": [
