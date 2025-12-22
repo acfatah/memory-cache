@@ -40,7 +40,6 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "start": "bun src/index.ts",
     "build": "bun --version > .bun-version && bun install && bun run scripts/build.ts",
     "lint": "bunx --bun eslint",
     "lint:changed": "{ git diff --name-only -z --diff-filter=d --relative HEAD; git ls-files -z --others --exclude-standard -- ':./'; } | xargs -0 -r bunx --bun eslint --pass-on-no-patterns --no-warn-ignored",
