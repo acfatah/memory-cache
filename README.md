@@ -35,6 +35,10 @@
 
 A simple in-memory cache for bun and nodejs.
 
+## Branch purpose
+
+> !IMPORTANT This branch installs and launch real Chromium/WebKit/Firefox via Playwright and expect higher CPU/memory during `bun run test:e2e`, plus extra disk for browser binaries and temporary profiles.
+
 ## Features
 
 - No dependencies.
