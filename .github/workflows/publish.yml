@@ -1,4 +1,4 @@
-name: Bun.sh npm Publish
+name: Publish to NPM
 
 on:
   release:
@@ -13,28 +13,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - id: checkout
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - id: setup-bun
-        name: Setup Bun
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: .bun-version
 
-      - id: install-deps
-        name: Install dependencies
+      - name: Install dependencies
         run: |
           bun install
 
-      - id: build
-        name: Build
+      - name: Build
         run: bun run build
 
-      - id: publish
-        name: Publish to NPM
-        run: bunx --bun npm publish --access public --no-git-checks
+      - name: Publish to NPM
+        run: bun publish --access public --no-git-checks
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-          NPM_CONFIG_PROVENANCE: true
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
