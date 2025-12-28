@@ -1,4 +1,4 @@
-name: Bun.sh Release
+name: Release
 
 on:
   push:
@@ -14,25 +14,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - id: checkout
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - id: setup-bun
-        name: Setup Bun
+      - name: Ensure tag is on main
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor "$(git rev-parse HEAD)" origin/main || { echo "Tag must point to main"; exit 1; }
+
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: .bun-version
 
-      - id: install-deps
-        name: Install dependencies
+      - name: Install dependencies
         run: |
           bun install
 
-      - id: generate-changelog
-        name: Generate Changelog
+      - name: Generate Changelog
         run: bunx --bun changelogithub --no-emoji
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

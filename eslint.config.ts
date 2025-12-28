@@ -1,26 +1,23 @@
-import antfu from '@antfu/eslint-config'
+import { config, markdown, preset } from '@acfatah/eslint-preset'
 
-export default antfu(
+export default config(
   {
     formatters: true,
+    type: 'lib',
+
+    ignores: [
+      '**/coverage/**',
+      '**/dist/**',
+      '**/logs/**',
+      '**/tsconfig.*',
+      'bun.lock',
+    ],
   },
 
   {
     rules: {
-      'no-console': 'off',
-      'sort-imports': 'off',
-      'perfectionist/sort-imports': [
-        'error',
-        {
-          partitionByNewLine: true,
-          newlinesBetween: 'ignore',
-        },
-      ],
+      ...preset,
+      ...markdown,
     },
-  },
-
-  {
-    name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/coverage/**', 'logs', 'tsconfig.*'],
   },
 )

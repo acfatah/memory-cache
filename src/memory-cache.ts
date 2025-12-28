@@ -29,7 +29,7 @@ export interface CacheOption {
 
 // In-memory cache object
 const cacheStorage: Map<string | number | symbol, CacheEntry> = new Map()
-const getTimeInMiliseconds = () => Date.now()
+const getTimeInMiliseconds = (): number => Date.now()
 let purgeIntervalId: NodeJS.Timer | null = null
 let purgeTimeout: number
 
@@ -70,7 +70,7 @@ export function useMemoryCache<CacheSchema extends Record<string, any> = Record<
     {
       ttl = defaultExpiration,
     }: { ttl?: number | null } = {},
-  ) {
+  ): void {
     // handle cache invalidation
     if (value === undefined) {
       cacheStorage.delete(key)
@@ -120,11 +120,11 @@ export function useMemoryCache<CacheSchema extends Record<string, any> = Record<
     return validKeys
   }
 
-  function remove(key: keyof CacheSchema) {
+  function remove(key: keyof CacheSchema): void {
     cacheStorage.delete(key)
   }
 
-  function clear() {
+  function clear(): void {
     cacheStorage.clear()
   }
 
