@@ -58,8 +58,8 @@
   },
   "devDependencies": {
     "@acfatah/eslint-preset": "^1.3.3",
-    "@commitlint/cli": "^20.2.0",
-    "@commitlint/config-conventional": "^20.2.0",
+    "@commitlint/cli": "^20.3.0",
+    "@commitlint/config-conventional": "^20.3.0",
     "@types/bun": "^1.3.5",
     "@types/node": "^25.0.3",
     "bun-plugin-dts": "^0.3.0",
