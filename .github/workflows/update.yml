@@ -22,11 +22,8 @@ jobs:
         with:
           bun-version-file: .bun-version
 
-      - name: Install dependencies
-        run: bun install
-
       - name: Update dependencies
-        run: bun update
+        run: bun update --production
 
       - name: Run tests
         run: bun test
@@ -35,8 +32,14 @@ jobs:
         id: changes
         run: |
           if git diff --quiet; then
+            echo "No changes detected"
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
+            echo "Changes detected:"
+            git diff --stat
+            echo ""
+            echo "Changed files:"
+            git diff --name-only
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -44,7 +47,7 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PR_BOT_TOKEN }}
           commit-message: 'chore: bun update'
           title: 'chore: bun update'
           body: |
