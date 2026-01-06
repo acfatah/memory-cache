@@ -1,4 +1,4 @@
-name: Update
+name: Weekly Update
 
 on:
   schedule:
@@ -49,11 +49,11 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.PR_BOT_TOKEN }}
-          commit-message: 'chore: bun update'
-          title: 'chore: bun update'
+          commit-message: 'chore: weekly bun update'
+          title: 'chore: weekly bun update'
           body: |
-            Automated `bun update` run.
-          branch: chore/bun-update
+            Automated weekly `bun update` run.
+          branch: chore/weekly-bun-update
           delete-branch: true
           labels: dependencies
 
