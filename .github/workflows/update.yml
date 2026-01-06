@@ -23,7 +23,8 @@ jobs:
           bun-version-file: .bun-version
 
       - name: Update dependencies
-        run: bun update --production
+        # Use --production to avoid updating dev dependencies when not needed
+        run: bun update
 
       - name: Run tests
         run: bun test
