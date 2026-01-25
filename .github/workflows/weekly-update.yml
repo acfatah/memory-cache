@@ -2,7 +2,7 @@ name: Weekly Update
 
 on:
   schedule:
-    - cron: '0 6 * * 0'
+    - cron: '59 7 * * 6' # 11:59 Friday GVMT+8
   workflow_dispatch:
 
 permissions:
