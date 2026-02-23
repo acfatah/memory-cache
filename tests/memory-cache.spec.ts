@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
+
 import { useMemoryCache } from '@/index'
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))

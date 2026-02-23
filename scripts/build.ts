@@ -1,4 +1,5 @@
 import type { BuildConfig } from 'bun'
+
 import dts from 'bun-plugin-dts'
 
 const defaultBuildConfig: BuildConfig = {
