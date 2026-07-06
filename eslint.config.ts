@@ -1,6 +1,6 @@
-import { config, markdown, preset } from '@acfatah/eslint-preset'
+import { defineConfig, markdown, typescript } from '@acfatah/eslint-preset'
 
-export default config(
+export default defineConfig(
   {
     formatters: true,
     type: 'lib',
@@ -14,10 +14,6 @@ export default config(
     ],
   },
 
-  {
-    rules: {
-      ...preset,
-      ...markdown,
-    },
-  },
+  typescript,
+  markdown,
 )
