@@ -87,6 +87,8 @@ clear()
 
 By default, the purge interval is set to 1 minute. To change it, use the `setPurgeTimeout` method. Note that this will affect all caches globally.
 
+The purge interval is `unref`'d, so it never keeps your process alive. A one-shot script, CLI, or cron job can import the cache and still exit naturally; in a long-running process the timer keeps firing as usual.
+
 To cache schema type inference,
 
 ```typescript

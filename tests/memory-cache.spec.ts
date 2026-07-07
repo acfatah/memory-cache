@@ -208,3 +208,36 @@ describe('cache', () => {
     expect(cacheStorage.size).toBe(0)
   })
 })
+
+describe('process lifecycle', () => {
+  // Regression test for the purge timer keeping the event loop alive.
+  // Before the fix, importing the library and touching the cache installed a
+  // ref-ed setInterval that prevented the process from ever exiting on its own.
+  // The child below does a single set() and nothing else; if the purge timer is
+  // not unref-ed it never exits and this test times out.
+  it('should not keep the process alive after use', async () => {
+    const entry = `${import.meta.dir}/../src/index.ts`
+    const script = `import { useMemoryCache } from ${JSON.stringify(entry)}; useMemoryCache().set('k', 1)`
+    const proc = Bun.spawn({
+      cmd: ['bun', '-e', script],
+      stdout: 'ignore',
+      stderr: 'ignore',
+    })
+
+    const TIMED_OUT = Symbol('timed-out')
+    let killer: ReturnType<typeof setTimeout>
+    const timeout = new Promise<typeof TIMED_OUT>((resolve) => {
+      killer = setTimeout(resolve, 8000, TIMED_OUT)
+    })
+
+    const outcome = await Promise.race([proc.exited, timeout])
+    clearTimeout(killer!)
+
+    if (outcome === TIMED_OUT) {
+      proc.kill()
+      throw new Error('process did not exit within 8s: the purge timer is keeping the event loop alive')
+    }
+
+    expect(outcome).toBe(0)
+  }, 15000)
+})

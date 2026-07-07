@@ -45,7 +45,7 @@ Consequences that are easy to get wrong:
 ## Cache semantics
 
 - **`ttl` is stored as an absolute expiry timestamp**, not a remaining duration. `set` computes `Date.now() + ttl` and stores it in `CacheEntry.ttl`. A `ttl` of `null` becomes `Infinity` (never expires) — so despite the `number | null` type, stored entries always hold a numeric timestamp, never `null`.
-- **Two-layer expiration.** `get` lazily evicts on read when an entry is past its timestamp; a background `setInterval` (default 1 minute) runs `purge()` to sweep expired entries proactively. The interval is created lazily on first `useMemoryCache()` call.
+- **Two-layer expiration.** `get` lazily evicts on read when an entry is past its timestamp; a background `setInterval` (default 1 minute) runs `purge()` to sweep expired entries proactively. The interval is created lazily on first `useMemoryCache()` call and is `unref`'d in `createPurgeInterval()`, so it never keeps the process alive (a one-shot script/CLI that touches the cache still exits naturally).
 - **`set(key, undefined)` is delete** — passing `undefined` as the value removes the key (used as an invalidation idiom in the README/tests). Default TTL is 5 minutes when the factory is given no `ttl`.
 - `__cacheStorage` is returned as an intentional, `@ts-expect-error`-hidden escape hatch used only by tests to assert on the raw `Map`.
 
