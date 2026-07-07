@@ -34,7 +34,16 @@ let purgeIntervalId: NodeJS.Timer | null = null
 let purgeTimeout: number
 
 function createPurgeInterval(): NodeJS.Timer {
-  return setInterval(purge, purgeTimeout || ONE_MINUTES)
+  const timer = setInterval(purge, purgeTimeout || ONE_MINUTES)
+
+  // Never let the background purge timer keep the process alive. Without this a
+  // one-shot script/CLI/cron that touches the cache hangs forever, and a
+  // server's graceful shutdown never drains. Lazy eviction (`get`) and
+  // on-demand `purge()` are unaffected; a long-lived process keeps the loop
+  // alive via its own handles, so the timer still fires normally.
+  timer.unref?.()
+
+  return timer
 }
 
 /**
