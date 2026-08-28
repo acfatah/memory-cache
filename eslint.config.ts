@@ -9,6 +9,7 @@ export default defineConfig(
       '**/coverage/**',
       '**/dist/**',
       '**/logs/**',
+      '**/plan/**',
       '**/tsconfig.*',
       'bun.lock',
     ],
