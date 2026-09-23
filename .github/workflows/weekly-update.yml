@@ -15,15 +15,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Bun
+        # Resolve the latest stable Bun rather than the pinned one, so the
+        # toolchain pin is refreshed on the same cadence as dependencies.
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version-file: .bun-version
+          bun-version: latest
+
+      - name: Refresh Bun pin
+        run: bun --version > .bun-version
 
       - name: Update dependencies
-        # Use --production to avoid updating dev dependencies when not needed
         run: bun update
 
       - name: Run tests
@@ -46,13 +50,18 @@ jobs:
 
       - name: Create Pull Request
         if: steps.changes.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.PR_BOT_TOKEN }}
-          commit-message: 'ci: weekly dependency update'
-          title: 'ci: weekly dependency update'
+          commit-message: 'ci: weekly toolchain and dependency update'
+          title: 'ci: weekly toolchain and dependency update'
           body: |
-            Automated weekly `bun update` run.
+            Automated weekly toolchain and dependency refresh.
+
+            - `.bun-version` is repinned to the latest stable Bun.
+            - `bun update` refreshes `bun.lock`.
+
+            The test suite ran against both before this PR was opened.
           branch: chore/weekly-bun-update
           delete-branch: true
           labels: dependencies

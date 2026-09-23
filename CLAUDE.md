@@ -6,7 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Toolchain
 
-Bun is the runtime, package manager, test runner, and bundler — there is no npm/pnpm, Jest, Vite, or tsc-based build here. Requires Bun `>=1.2.18` and Node `>=22`. The pinned Bun version lives in `.bun-version` (consumed by CI and by `build`).
+Bun is the runtime, package manager, test runner, and bundler — there is no npm/pnpm, Jest, Vite, or tsc-based build here.
+
+Two different version numbers live here and mean different things:
+
+- `package.json` `engines` declares the **consumer** floor — Bun `>=1.2.18`, Node `>=22`. This is a claim about what can run the published `dist/index.mjs`, not about what builds it. Nothing enforces it (npm validates only the `node`/`npm` keys; Bun ignores `engines`), so don't raise it to track the toolchain.
+- `.bun-version` is the **toolchain** pin (currently `1.4.0`), consumed by every workflow via `oven-sh/setup-bun`'s `bun-version-file` and rewritten by `build` (`bun --version > .bun-version`). `weekly-update.yml` is the exception: it resolves the latest stable Bun and writes the pin back, so the toolchain is refreshed on the same weekly cadence as dependencies.
 
 ## Commands
 
