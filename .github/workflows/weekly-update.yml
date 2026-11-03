@@ -33,8 +33,8 @@ jobs:
       - name: Run tests
         run: bun test
 
-      - name: Typecheck & lint
-        run: bun run typecheck && bun lint
+      - name: Typecheck, lint & format check
+        run: bun run typecheck && bun lint && bun format:check
 
       - name: Detect changes
         id: changes
@@ -64,8 +64,8 @@ jobs:
             - `.bun-version` is repinned to the latest stable Bun.
             - `bun update` refreshes `bun.lock`.
 
-            Typecheck, lint and the test suite ran against both before this
-            PR was opened.
+            Typecheck, lint, the format check and the test suite ran against
+            both before this PR was opened.
           branch: chore/weekly-bun-update
           delete-branch: true
           labels: dependencies
