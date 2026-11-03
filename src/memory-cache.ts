@@ -76,9 +76,7 @@ export function useMemoryCache<CacheSchema extends Record<string, any> = Record<
   function set(
     key: keyof CacheSchema,
     value: unknown,
-    {
-      ttl = defaultExpiration,
-    }: { ttl?: number | null } = {},
+    { ttl = defaultExpiration }: { ttl?: number | null } = {},
   ): void {
     // handle cache invalidation
     if (value === undefined) {
@@ -100,8 +98,7 @@ export function useMemoryCache<CacheSchema extends Record<string, any> = Record<
   function get<K extends keyof CacheSchema>(key: K): CacheSchema[K] | undefined {
     const cacheContent = cacheStorage.get(key)
 
-    if (!cacheContent)
-      return undefined // if not in cache, then undefined
+    if (!cacheContent) return undefined // if not in cache, then undefined
 
     const { value, ttl } = cacheContent
 
@@ -138,8 +135,7 @@ export function useMemoryCache<CacheSchema extends Record<string, any> = Record<
   }
 
   // Set up the purge interval only if it hasn't been set up already
-  if (purgeIntervalId === null)
-    purgeIntervalId = createPurgeInterval()
+  if (purgeIntervalId === null) purgeIntervalId = createPurgeInterval()
 
   // return the api
   return {

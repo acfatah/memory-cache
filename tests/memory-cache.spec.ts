@@ -226,7 +226,7 @@ describe('process lifecycle', () => {
 
     const TIMED_OUT = Symbol('timed-out')
     let killer: ReturnType<typeof setTimeout>
-    const timeout = new Promise<typeof TIMED_OUT>((resolve) => {
+    const timeout = new Promise<typeof TIMED_OUT>(resolve => {
       killer = setTimeout(resolve, 8000, TIMED_OUT)
     })
 
@@ -235,7 +235,9 @@ describe('process lifecycle', () => {
 
     if (outcome === TIMED_OUT) {
       proc.kill()
-      throw new Error('process did not exit within 8s: the purge timer is keeping the event loop alive')
+      throw new Error(
+        'process did not exit within 8s: the purge timer is keeping the event loop alive',
+      )
     }
 
     expect(outcome).toBe(0)
