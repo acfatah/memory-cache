@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Toolchain
 
-Bun is the runtime, package manager, test runner, and bundler — there is no npm/pnpm, Jest, Vite, or tsc-based build here.
+Bun is the runtime, package manager, test runner, and bundler — there is no npm/pnpm, Jest, Vite, or tsc-based build here. Lint, format and typecheck run on the oxc toolchain (oxlint, oxfmt, tsgolint); see Lint and format.
 
 Two different version numbers live here and mean different things:
 
@@ -24,16 +24,29 @@ bun test -t "should purge"            # run tests matching a name pattern
 bun test:watch           # watch mode
 bun test:coverage        # emit coverage/lcov.info (what CI uploads)
 
-bun typecheck            # tsc --noEmit (type-check only; no build output)
-bun lint                 # eslint over the repo
-bun format               # eslint --fix
-bun lint:changed         # eslint only files changed vs HEAD (untracked included)
+bun typecheck            # oxlint -A all --type-aware --type-check (tsgolint; no build output)
+bun lint                 # full-path oxlint over the repo
+bun lint:changed         # fast-path oxlint on files changed vs HEAD (untracked included)
+bun lint:inspect         # print the resolved oxlint config
+bun format               # full-path oxlint --fix, then oxfmt
+bun format:check         # oxfmt --check (what CI runs)
+bun format:changed       # fast-path oxlint --fix + oxfmt on changed files
 
 bun run build            # bundle src/ -> dist/ (ESM .mjs + .d.ts)
 bun run release          # build, then interactive version bump + git tag (bumpp)
 ```
 
-`precommit` (`bun run typecheck && bun run lint:staged`) and commit-message linting run automatically via `simple-git-hooks`; commits must follow Conventional Commits (`@commitlint/config-conventional`).
+`precommit` (`bun run typecheck && bun run lint:staged`) and commit-message linting run automatically via `simple-git-hooks`; commits must follow Conventional Commits (`@commitlint/config-conventional`). `precommit` only checks: it type-checks, then runs a fast-path lint and `oxfmt --check` on the staged files. It never rewrites them; run `bun format:staged` to fix and re-stage.
+
+## Lint and format
+
+Linting is oxlint (`oxlint.config.ts`), formatting is oxfmt (`oxfmt.config.ts`); there is no ESLint or Prettier. oxfmt formats TypeScript, Markdown, JSON and YAML and sorts imports; oxlint does not lint Markdown.
+
+- **Fast and full paths.** `oxlint.config.ts` reads `OXLINT_FULL`. Unset (pre-commit, `:changed`, `:staged`, editors), it runs native rules only, in about 0.1 s. `OXLINT_FULL=1` (`bun lint`, `bun format`, CI) also loads the JS plugins (`perfectionist/sort-exports`, `@stylistic/padding-line-between-statements` before `return`) and the type-aware rules, in about 1 s. A file can pass pre-commit and still fail `bun lint`.
+- **Override globs must not use extglob.** oxlint silently ignores patterns like `*.?([cm])ts`; use brace lists such as `**/*.{ts,tsx,mts,cts}`.
+- **Findings at `warn`** (the `correctness` category) do not fail `bun lint`; rules set to `error` do.
+- **Typecheck** runs tsgolint (`oxlint-tsgolint`, TypeScript 7) through `oxlint -A all --type-aware --type-check`; `-A all` turns every lint rule off, so only type errors report. `typescript ~6.0.3` and its `overrides` pin stay because `bun-plugin-dts` needs the classic TypeScript API to emit `dist/index.d.ts`.
+- **Blame.** The repo-wide oxfmt reformat is listed in `.git-blame-ignore-revs`. GitHub skips it automatically; locally, run `git config blame.ignoreRevsFile .git-blame-ignore-revs` once.
 
 ## Architecture — the one thing to know first
 
