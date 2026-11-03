@@ -49,7 +49,7 @@ import { useMemoryCache } from '@acfatah/memory-cache'
 
 const { set, get, remove, keys, clear } = useMemoryCache({
   // Default expiration value is 5 minutes if not provided.
-  ttl: 15 * 60 * 1000
+  ttl: 15 * 60 * 1000,
 })
 
 // ...

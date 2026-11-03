@@ -7,11 +7,9 @@ const defaultBuildConfig: BuildConfig = {
   outdir: './dist',
 }
 
-Promise.all([
-  Bun.build({
-    ...defaultBuildConfig,
-    plugins: [dts()],
-    format: 'esm',
-    naming: '[dir]/[name].mjs',
-  }),
-])
+await Bun.build({
+  ...defaultBuildConfig,
+  plugins: [dts()],
+  format: 'esm',
+  naming: '[dir]/[name].mjs',
+})
